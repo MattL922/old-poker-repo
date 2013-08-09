@@ -1,0 +1,29 @@
+html
+{
+    background: black url(../img/red-poker-chips-bg.jpg) no-repeat center center fixed;
+    -webkit-background-size: contain;
+    -moz-background-size: contain;
+    -o-background-size: contain;
+    background-size: contain;
+}
+
+body
+{
+    font-size: 62.5%;
+}
+
+#site-title
+{
+    position: relative;
+    top: 200px;
+    width: 50%;
+    margin: auto;
+    text-align: center;
+}
+
+#site-title span
+{
+    font-family: 'Ewert', cursive;
+    font-size: 700%;
+    color: red;
+}
