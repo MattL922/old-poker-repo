@@ -10,20 +10,62 @@ html
 body
 {
     font-size: 62.5%;
+    font-family: Verdana, Geneva, sans-serif;
 }
+
+a.red-link:link     {color:#FF0000; text-decoration: none;}         /* unvisited link */
+a.red-link:visited  {color:#FF0000; text-decoration: none;}         /* visited link */
+a.red-link:hover    {color:#FF0000; text-decoration: underline;}    /* mouse over link */
+a.red-link:active   {color:#FF0000;}                                /* selected link */ 
 
 #site-title
 {
-    position: relative;
-    top: 200px;
-    width: 50%;
-    margin: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 800px;
+    height:200px;
+    margin-left: -400px;
+    margin-top: -200px;
     text-align: center;
 }
 
 #site-title span
 {
-    font-family: 'Ewert', cursive;
+    /*font-family: 'Ewert', cursive;*/
+    font-family: 'Yesteryear', cursive;
     font-size: 700%;
+    color: white;
+    text-shadow: 4px 4px 5px #ff0000;
+}
+
+.inline-list
+{
+    margin: 0;
+    padding: 0;
+}
+
+.inline-list li
+{
+    display: inline;
+}
+
+#site-title-menu
+{
+    margin-top: 10px;
+    font-size: 120%;
+    font-weight: bold;
     color: red;
 }
+
+
+#site-title-suits li
+{
+    font-size: 300%;
+}
+
+#club { text-shadow: 0px 0px 10px #00ff00; margin-right: 35px; }
+#diamond { text-shadow: 0px 0px 10px #0000ff; margin-left: 35px; margin-right: 35px; }
+#heart { text-shadow: 0px 0px 10px #ff0000; margin-left: 35px; margin-right: 35px; }
+#spade { text-shadow: 0px 0px 10px #ffffff; margin-left: 35px; }
+
