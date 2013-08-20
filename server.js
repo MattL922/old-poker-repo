@@ -1,38 +1,99 @@
-var http = require("http");
-var fs   = require("fs");
+/********************************************************************************
+ * Requires
+ ********************************************************************************/
+var express = require("/usr/local/lib/node_modules/express"),
+    http    = require("http"),
+    mongodb = require("/usr/local/lib/node_modules/mongodb").MongoClient,
+    io      = require("/usr/local/lib/node_modules/socket.io"),
+    fs      = require("fs");
 
-var HOST = "localhost";
-var PORT = 1337;
 
-var requestHandler = 
+/********************************************************************************
+ * Host info
+ ********************************************************************************/
+var HOST = "localhost",
+    PORT = 1337;
+
+
+/********************************************************************************
+ * App
+ ********************************************************************************/
+var app = express();
+
+/********************************************************************************
+ * Middleware
+ ********************************************************************************/
+app.use(express.bodyParser());
+app.use(express.cookieParser());
+app.use(express.cookieSession({
+    key:    "freerollpoker",
+    secret: "super secret pw"
+}));
+
+
+/********************************************************************************
+ * Routes
+ ********************************************************************************/
+app.get("/", function(req, res)
 {
-    "/":               {content:     fs.readFileSync("pages/home.html", {encoding: "utf8"}),
-                        contentType: "text/html",
-                        encoding:    "utf8"},
-    "/css/styles.css": {content:     fs.readFileSync("css/styles.css", {encoding: "utf8"}),
-                        contentType: "text/css",
-                        encoding:    "utf8"},
-    "/img/red_poker_chips_bg.png": {content:     fs.readFileSync("img/red_poker_chips_bg.png", {encoding: "binary"}),
-                        contentType: "image/png",
-                        encoding: "binary"}
-};
-var statusCode404 = {content:     fs.readFileSync("pages/404.html", {encoding: "utf8"}),
-                     contentType: "text/html"};
+    res.sendfile("pages/home.html");
+});
 
-http.createServer(function(req, res)
+app.post("/login", function(req, res)
 {
-    var content = requestHandler[req.url] || false;
-    if(content)
+    mongodb.connect("mongodb://localhost:27017/freerollpoker", function(err, db)
     {
-        res.writeHead(200, content["contentType"]);
-        res.write(content["content"], content["encoding"]);
+        if(err) throw err;
+        var username = req.body.username,
+            password = req.body.password;
+        db.collection("users").findOne({username: username}, {fields: {pw: 1}}, function(err, doc)
+        {
+            if(err) throw err;
+            if(doc.pw == password)
+            {
+                req.session.loggedInAs = username;
+                res.redirect(303, "/lobby.html");
+            }
+            else
+            {
+                res.redirect(303, "/");
+            }
+            db.close();
+        });
+    });
+});
+
+app.get("/lobby.html", function(req, res)
+{
+    if(req.session.loggedInAs)
+    {
+        res.sendfile("pages/lobby.html");
     }
     else
     {
-        res.writeHead(404, statusCode404["contentType"]);
-        res.write(statusCode404["content"]);
+        res.redirect("/");
     }
-    res.end();
-}).listen(PORT, HOST);
+});
+
+// Get static content - js, css, img
+app.use(express.static(__dirname + "/"));
+
+
+/********************************************************************************
+ * HTTP Server
+ ********************************************************************************/
+var server = http.createServer(app).listen(PORT, HOST);
+
+
+/********************************************************************************
+ * Socket IO
+ ********************************************************************************/
+var serverIO = io.listen(server);
+
+serverIO.sockets.on("connection", function(socket)
+{
+    
+});
+
 
 console.log("Server running at http://"+HOST+":"+PORT+"/");

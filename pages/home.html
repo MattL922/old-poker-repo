@@ -2,10 +2,10 @@
 
 <html>
     <head>
-        <!--<link href='http://fonts.googleapis.com/css?family=Ewert' rel='stylesheet' type='text/css'>-->
         <link href='http://fonts.googleapis.com/css?family=Yesteryear' rel='stylesheet' type='text/css'>
+        <!--<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0-wip/css/bootstrap.min.css"/>-->
         <link type="text/css" rel="stylesheet" href="../css/styles.css"/>
-    <title>Freeroll Poker</title>
+        <title>Freeroll Poker</title>
     </head>
     <body>
         <div id="site-title">
@@ -18,12 +18,30 @@
                 <li id="spade">&#9824;</li>
             </ul>
             <ul class="inline-list" id="site-title-menu">
-                <li><a class="red-link" href="#">Log In</a></li>
+                <li><a class="red-link" id="login-link" href="#">Log In</a></li>
                 <li>|</li>
                 <li><a class="red-link" href="#">Register</a></li>
                 <li>|</li>
                 <li><a class="red-link" href="#">About</a></li>
             </ul>
+            <div id="login-form">
+                <form name="login" action="login" method="post">
+                    <label class="login-label">Username: </label><input class="login-input" type="text" name="username"/>
+                    <br/>
+                    <label class="login-label">Password: </label><input class="login-input" type="password" name="password"/>
+                    <br/>
+                    <input type="submit" value="Submit"/>
+                </form>
+            </div>
         </div>
+        
+        <!--<div class="modal" id="loginModal" role="dialog" aria-hidden="true">login</div>-->
+        
+        <!-- jQuery -->
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <!-- Bootstrap -->
+        <!--<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0-wip/js/bootstrap.min.js"></script>-->
+        <!-- Custom JS -->
+        <script src="js/functions.js"></script>
     </body>
 </html>
