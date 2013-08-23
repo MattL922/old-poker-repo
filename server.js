@@ -19,10 +19,11 @@ var HOST = "localhost",
  * App
  ********************************************************************************/
 var app = express();
+app.set("views", __dirname + "/views");
+app.set("view engine", "jade");
 
-/********************************************************************************
- * Middleware
- ********************************************************************************/
+// Middleware
+
 app.use(express.bodyParser());
 app.use(express.cookieParser());
 app.use(express.cookieSession({
@@ -30,10 +31,8 @@ app.use(express.cookieSession({
     secret: "super secret pw"
 }));
 
+// Routes
 
-/********************************************************************************
- * Routes
- ********************************************************************************/
 app.get("/", function(req, res)
 {
     res.sendfile("pages/home.html");
@@ -65,14 +64,15 @@ app.post("/login", function(req, res)
 
 app.get("/lobby.html", function(req, res)
 {
-    if(req.session.loggedInAs)
+    /*if(req.session.loggedInAs)
     {
         res.sendfile("pages/lobby.html");
     }
     else
     {
         res.redirect("/");
-    }
+    }*/
+    res.render("lobby", {myvar:"it worked!"});
 });
 
 // Get static content - js, css, img
