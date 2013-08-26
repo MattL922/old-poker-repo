@@ -5,7 +5,8 @@ var express = require("/usr/local/lib/node_modules/express"),
     http    = require("http"),
     mongodb = require("/usr/local/lib/node_modules/mongodb").MongoClient,
     io      = require("/usr/local/lib/node_modules/socket.io"),
-    fs      = require("fs");
+    fs      = require("fs"),
+    CM      = require("./lib/casino_manager.js");
 
 
 /********************************************************************************
@@ -72,7 +73,7 @@ app.get("/lobby.html", function(req, res)
     {
         res.redirect("/");
     }*/
-    res.render("lobby", {myvar:"it worked!"});
+    res.render("lobby", {tournamentList: casinoManager.tournaments});
 });
 
 // Get static content - js, css, img
@@ -92,8 +93,11 @@ var serverIO = io.listen(server);
 
 serverIO.sockets.on("connection", function(socket)
 {
-    
+    // Have clients connect on the lobby page
 });
 
 
 console.log("Server running at http://"+HOST+":"+PORT+"/");
+
+var casinoManager = new CM();
+casinoManager.checkSchedule();
