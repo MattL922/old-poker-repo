@@ -5,4 +5,13 @@ html
         title Freeroll Poker
     body
         h1 Lobby
-        p= myvar
+        table
+            tr
+                th Title
+                th Start Time
+                th Registered
+            each val, key in tournamentList
+                tr
+                    td= val.title
+                    td= val.startTime
+                    td= val.numRegistered
