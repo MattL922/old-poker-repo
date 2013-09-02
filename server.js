@@ -1,12 +1,15 @@
 /********************************************************************************
  * Requires
  ********************************************************************************/
-var express = require("/usr/local/lib/node_modules/express"),
-    http    = require("http"),
-    mongodb = require("/usr/local/lib/node_modules/mongodb").MongoClient,
-    io      = require("/usr/local/lib/node_modules/socket.io"),
-    fs      = require("fs"),
-    CM      = require("./lib/casino_manager.js");
+var express     = require("/usr/local/lib/node_modules/express"),
+    http        = require("http"),
+    mongodb     = require("/usr/local/lib/node_modules/mongodb").MongoClient,
+    redisClient = require("/usr/local/lib/node_modules/redis").createClient(6379, "localhost"),
+    redisStore  = require("/usr/local/lib/node_modules/connect-redis")(express),
+    io          = require("/usr/local/lib/node_modules/socket.io"),
+    fs          = require("fs"),
+    CM          = require("./lib/casino_manager.js"),
+    cutils      = require("/usr/local/lib/node_modules/express/node_modules/connect").utils;
 
 
 /********************************************************************************
@@ -26,10 +29,16 @@ app.set("view engine", "jade");
 // Middleware
 
 app.use(express.bodyParser());
-app.use(express.cookieParser());
-app.use(express.cookieSession({
-    key:    "freerollpoker",
-    secret: "super secret pw"
+app.use(express.cookieParser("super secret pw"));
+app.use(express.session({
+    key:    "freerollpoker_sid",
+    secret: "super secret pw",
+    store:  new redisStore(
+            {
+                host:   "localhost",
+                port:   6379,
+                client: redisClient
+            })
 }));
 
 // Routes
@@ -52,6 +61,7 @@ app.post("/login", function(req, res)
             if(doc.pw == password)
             {
                 req.session.loggedInAs = username;
+                res.cookie("loggedInAs", username, {signed: true});
                 res.redirect(303, "/lobby.html");
             }
             else
@@ -65,15 +75,15 @@ app.post("/login", function(req, res)
 
 app.get("/lobby.html", function(req, res)
 {
-    /*if(req.session.loggedInAs)
+    if(req.session.id === req.signedCookies["freerollpoker_sid"])
     {
-        res.sendfile("pages/lobby.html");
+        res.render("lobby", {tournamentList: casinoManager.tournaments});
     }
     else
     {
         res.redirect("/");
-    }*/
-    res.render("lobby", {tournamentList: casinoManager.tournaments});
+    }
+    //res.render("lobby", {tournamentList: casinoManager.tournaments});
 });
 
 // Get static content - js, css, img
@@ -86,14 +96,25 @@ app.use(express.static(__dirname + "/"));
 var server = http.createServer(app).listen(PORT, HOST);
 
 
-/********************************************************************************
- * Socket IO
- ********************************************************************************/
+////////////////////////////////////////////////////////////////////////////////
+// Socket IO
+////////////////////////////////////////////////////////////////////////////////
 var serverIO = io.listen(server);
+
+serverIO.configure(function()
+{
+    serverIO.set("authorization", function(handshakeData, callback)
+    {
+        console.log("socket io authorization running");
+        console.log(decodeURIComponent(handshakeData.headers.cookie));
+        callback(null, true);
+    });
+});
 
 serverIO.sockets.on("connection", function(socket)
 {
     // Have clients connect on the lobby page
+    console.log("received socket connection");
 });
 
 
